@@ -3,58 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>실습일지 AI - 사회복지현장실습 일지 생성기</title>
+  <title>실습일지 AI</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #FAF8F5;
-      --bg-card: #FFFFFF;
-      --bg-input: #F5F3F0;
-      --bg-accent: #FFF8F0;
-      --text-primary: #1A1A1A;
-      --text-secondary: #5A5A5A;
-      --text-muted: #9A9A9A;
-      --accent: #D4622B;
-      --accent-light: #F0DDD0;
-      --accent-dark: #B84E1E;
-      --border: #E8E4DF;
-      --border-focus: #D4622B;
-      --success: #2D8A56;
-      --success-light: #E8F5E9;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --transition: 0.2s ease;
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --text-1: #1D1D1F;
+      --text-2: #6E6E73;
+      --text-3: #AEAEB2;
+      --border: #E5E5EA;
+      --accent: #1D1D1F;
+      --accent-hover: #424245;
+      --blue: #0071E3;
+      --radius: 12px;
+      --transition: 0.15s ease;
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Sans KR', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
       line-height: 1.7;
-      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    /* Header */
+
+    /* ── Header ── */
     .header {
-      background: var(--bg-card);
       border-bottom: 1px solid var(--border);
-      padding: 20px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      background: rgba(255,255,255,0.92);
+      padding: 16px 0;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,250,250,0.85);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
     }
     .header-inner {
-      max-width: 900px;
+      max-width: 720px;
       margin: 0 auto;
       padding: 0 24px;
       display: flex;
@@ -62,1155 +47,745 @@
       justify-content: space-between;
     }
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--accent);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: white;
-      font-weight: 700;
-    }
-    .logo-text {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.5px;
-    }
-    .logo-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 400;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-    .api-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    .api-status:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .api-status.connected {
-      color: var(--success);
-      border-color: var(--success);
-      background: var(--success-light);
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-muted);
-    }
-    .api-status.connected .status-dot {
-      background: var(--success);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    /* Main Container */
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 24px 80px;
-    }
-    /* Section Card */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
-    .card:hover {
-      box-shadow: var(--shadow-md);
-    }
-    .card-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      color: var(--text-1);
     }
-    .card-title .num {
-      width: 28px;
-      height: 28px;
-      background: var(--accent);
-      color: white;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .logo span {
+      font-weight: 400;
+      color: var(--text-3);
       font-size: 13px;
-      font-weight: 700;
-      font-family: 'Noto Sans KR', sans-serif;
+      margin-left: 8px;
     }
-    /* Form Elements */
+    .api-badge {
+      font-size: 12px;
+      color: var(--text-3);
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .api-badge:hover { border-color: var(--text-2); color: var(--text-2); }
+    .api-badge.on { color: #34C759; border-color: #34C759; }
+    .api-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3);
+    }
+    .api-badge.on .api-dot { background: #34C759; }
+
+    /* ── Container ── */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 100px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 32px;
+    }
+    .section-head {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+      margin-bottom: 16px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    /* ── Form ── */
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
       margin-bottom: 6px;
-      letter-spacing: -0.2px;
     }
-    input[type="text"],
-    input[type="password"],
-    input[type="date"],
-    input[type="number"],
-    select,
-    textarea {
+    input[type="text"], input[type="password"], input[type="date"],
+    input[type="number"], select, textarea {
       width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: 'Noto Sans KR', sans-serif;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
       font-size: 14px;
-      color: var(--text-primary);
-      background: var(--bg-input);
+      color: var(--text-1);
+      background: var(--bg);
       transition: var(--transition);
       outline: none;
     }
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--border-focus);
-      background: var(--bg-card);
-      box-shadow: 0 0 0 3px rgba(212, 98, 43, 0.1);
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--text-1);
+      background: var(--surface);
     }
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-      line-height: 1.8;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .form-group {
-      margin-bottom: 16px;
-    }
-    .form-group:last-child {
-      margin-bottom: 0;
-    }
-    /* API Key Section */
+    textarea { resize: vertical; min-height: 80px; line-height: 1.8; }
+    .row { display: grid; gap: 12px; margin-bottom: 14px; }
+    .row-2 { grid-template-columns: 1fr 1fr; }
+    .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+    /* ── API Section ── */
     .api-section {
-      background: var(--bg-accent);
-      border: 1.5px dashed var(--accent-light);
-      border-radius: var(--radius-md);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
       padding: 20px;
-      margin-bottom: 20px;
+      margin-bottom: 32px;
+      background: var(--surface);
     }
-    .api-section.hidden {
-      display: none;
-    }
-    .api-section label {
-      color: var(--accent-dark);
-    }
-    .api-input-wrap {
-      display: flex;
-      gap: 10px;
-    }
-    .api-input-wrap input {
-      flex: 1;
-    }
+    .api-section.hidden { display: none; }
+    .api-row { display: flex; gap: 8px; }
+    .api-row input { flex: 1; }
+
+    /* ── Buttons ── */
     .btn {
-      padding: 12px 24px;
+      padding: 10px 20px;
       border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-    .btn-primary {
+    .btn-dark {
       background: var(--accent);
-      color: white;
+      color: #fff;
     }
-    .btn-primary:hover {
-      background: var(--accent-dark);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-    .btn-primary:disabled {
-      background: var(--text-muted);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    .btn-secondary {
-      background: var(--bg-input);
-      color: var(--text-secondary);
-      border: 1.5px solid var(--border);
-    }
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .btn-small {
-      padding: 8px 16px;
-      font-size: 13px;
-    }
-    .btn-generate {
-      width: 100%;
-      padding: 16px;
-      font-size: 16px;
-      justify-content: center;
-      margin-top: 8px;
-    }
-    /* Hint */
-    .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 6px;
-      line-height: 1.5;
-    }
-    /* Activities */
-    .activity-item {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 16px;
-      margin-bottom: 12px;
-      position: relative;
-    }
-    .activity-item .form-row {
-      margin-bottom: 12px;
-    }
-    .activity-remove {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 28px;
-      height: 28px;
-      border: none;
+    .btn-dark:hover { background: var(--accent-hover); }
+    .btn-dark:disabled { background: var(--text-3); cursor: not-allowed; }
+    .btn-ghost {
       background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      transition: var(--transition);
+      color: var(--text-2);
+      border: 1px solid var(--border);
     }
-    .activity-remove:hover {
-      background: #FEE2E2;
-      color: #DC2626;
-    }
-    .add-activity {
+    .btn-ghost:hover { border-color: var(--text-1); color: var(--text-1); }
+    .btn-full {
       width: 100%;
+      justify-content: center;
       padding: 14px;
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-sm);
+      font-size: 15px;
+      border-radius: 10px;
+      letter-spacing: -0.2px;
+    }
+
+    /* ── Activity Items ── */
+    .act-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 10px;
+      position: relative;
+      background: var(--bg);
+    }
+    .act-item .row { margin-bottom: 10px; }
+    .act-del {
+      position: absolute; top: 10px; right: 10px;
+      width: 24px; height: 24px;
+      border: none; background: transparent;
+      color: var(--text-3); cursor: pointer;
+      border-radius: 6px; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .act-del:hover { background: #FFE5E5; color: #FF3B30; }
+    .add-btn {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px dashed var(--border);
+      border-radius: 10px;
       background: transparent;
-      color: var(--text-muted);
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 14px;
+      color: var(--text-3);
+      font-family: inherit;
+      font-size: 13px;
       cursor: pointer;
       transition: var(--transition);
     }
-    .add-activity:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--bg-accent);
-    }
-    /* Result */
-    .result-area {
-      display: none;
-    }
-    .result-area.visible {
-      display: block;
-    }
-    .journal-output {
-      background: var(--bg-card);
+    .add-btn:hover { border-color: var(--text-2); color: var(--text-2); }
+
+    /* ── Result ── */
+    .result { display: none; }
+    .result.on { display: block; }
+    .journal {
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      box-shadow: var(--shadow-md);
-      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
     }
-    .journal-header {
+    .j-head {
+      padding: 24px 28px;
+      border-bottom: 2px solid var(--text-1);
       text-align: center;
-      padding-bottom: 24px;
-      border-bottom: 2px solid var(--text-primary);
-      margin-bottom: 24px;
     }
-    .journal-header h2 {
+    .j-head h2 {
       font-family: 'Noto Serif KR', serif;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
-      margin-bottom: 8px;
+      letter-spacing: 8px;
     }
-    .journal-meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 24px;
-      font-size: 14px;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .journal-meta span {
-      display: flex;
-      gap: 8px;
-    }
-    .journal-meta strong {
-      color: var(--text-secondary);
-      min-width: 70px;
-    }
-    .journal-table {
+    .j-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 24px;
-      font-size: 14px;
+      font-size: 13px;
     }
-    .journal-table th,
-    .journal-table td {
-      border: 1px solid var(--border);
-      padding: 12px 14px;
-      text-align: left;
+    .j-table th, .j-table td {
+      border: 1px solid #D2D2D7;
+      padding: 10px 14px;
+      vertical-align: middle;
+    }
+    .j-table th {
+      background: #F5F5F7;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-2);
+      white-space: nowrap;
+      width: 88px;
+      font-size: 12px;
+    }
+    .j-table td { text-align: left; line-height: 1.8; }
+    .j-stamp {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-3);
+      width: 72px;
+    }
+    .j-stamp-circle {
+      display: inline-block;
+      width: 36px; height: 36px;
+      border: 1.5px solid #D2D2D7;
+      border-radius: 50%;
+      line-height: 33px;
+      font-size: 10px;
+      color: #C7C7CC;
+      margin-top: 3px;
+    }
+    .j-progress { padding: 0 !important; }
+    .j-p-table { width: 100%; border-collapse: collapse; }
+    .j-p-table td {
+      border: none;
+      border-bottom: 1px solid #F2F2F7;
+      padding: 8px 14px;
       vertical-align: top;
     }
-    .journal-table th {
-      background: var(--bg-input);
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-    }
-    .journal-table td:first-child {
-      white-space: nowrap;
-      width: 100px;
+    .j-p-table tr:last-child td { border-bottom: none; }
+    .j-p-time {
+      width: 88px;
+      text-align: center;
       font-weight: 500;
+      font-size: 12px;
+      color: var(--text-2);
+      border-right: 1px solid #F2F2F7 !important;
     }
-    .journal-reflection {
-      margin-top: 20px;
+    .j-p-content { font-size: 13px; line-height: 1.8; }
+    .j-opinion { min-height: 72px; line-height: 1.9; font-size: 13px; color: var(--text-2); }
+    .j-section-note {
+      background: #F5F5F7;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-3);
+      padding: 5px 14px !important;
     }
-    .journal-reflection h4 {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: var(--text-primary);
-    }
-    .journal-reflection p {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.9;
-    }
+
     .result-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-      justify-content: flex-end;
+      display: flex; gap: 8px;
+      margin-top: 16px; justify-content: flex-end;
     }
-    /* Loading */
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(250, 248, 245, 0.9);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 20px;
-      backdrop-filter: blur(4px);
-    }
-    .loading-overlay.visible {
-      display: flex;
-    }
-    .loader {
-      width: 48px;
-      height: 48px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .loading-text {
-      font-size: 15px;
-      color: var(--text-secondary);
-      animation: fadeInOut 2s ease infinite;
-    }
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      padding: 14px 20px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 500;
-      z-index: 2000;
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    .toast.success {
-      background: var(--success);
-      color: white;
-    }
-    .toast.error {
-      background: #DC2626;
-      color: white;
-    }
-    /* Generated Image */
-    .journal-image-section {
-      margin-top: 24px;
-      padding-top: 20px;
+
+    /* ── Image ── */
+    .j-img-section {
+      margin: 20px 28px 24px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
-    .journal-image-section h4 {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 12px;
+    .j-img-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-2); }
+    .j-img-section img { max-width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+    .img-loading {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px; background: var(--bg);
+      border-radius: 8px; font-size: 12px; color: var(--text-3);
     }
-    .journal-image-section img {
-      max-width: 100%;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-    .image-generating {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 16px;
-      background: var(--bg-input);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-    .image-generating .mini-loader {
-      width: 18px;
-      height: 18px;
+    .mini-spin {
+      width: 14px; height: 14px;
       border: 2px solid var(--border);
-      border-top-color: var(--accent);
+      border-top-color: var(--text-2);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
-    /* Responsive */
+
+    /* ── Overlay ── */
+    .overlay {
+      display: none; position: fixed;
+      inset: 0; z-index: 1000;
+      background: rgba(250,250,250,0.92);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      justify-content: center; align-items: center;
+      flex-direction: column; gap: 16px;
+    }
+    .overlay.on { display: flex; }
+    .spin {
+      width: 32px; height: 32px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--text-1);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-text { font-size: 14px; color: var(--text-2); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      padding: 12px 24px; border-radius: 100px;
+      font-size: 13px; font-weight: 500;
+      z-index: 2000; opacity: 0;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.ok { background: var(--text-1); color: #fff; }
+    .toast.err { background: #FF3B30; color: #fff; }
+
+    /* ── Responsive ── */
     @media (max-width: 640px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      .journal-meta {
-        grid-template-columns: 1fr;
-      }
-      .header-inner {
-        flex-direction: column;
-        gap: 12px;
-      }
-      .card {
-        padding: 20px;
-      }
-      .journal-output {
-        padding: 20px;
-      }
+      .row-2, .row-3 { grid-template-columns: 1fr; }
+      .header-inner { gap: 12px; }
+      .panel { padding: 18px; }
+      .j-head { padding: 18px 20px; }
+      .j-head h2 { font-size: 17px; letter-spacing: 4px; }
     }
-    /* Print */
+
+    /* ── Print ── */
     @media print {
-      .header, .card:not(.result-area .card), .result-actions, .btn-generate {
-        display: none !important;
-      }
-      .result-area {
-        display: block !important;
-      }
-      .journal-output {
-        box-shadow: none;
-        border: none;
-        padding: 0;
-      }
-      body {
-        background: white;
-      }
+      .header, .section:not(.result), .api-section, .result-actions { display: none !important; }
+      .result { display: block !important; }
+      .journal { box-shadow: none; border: none; }
+      body { background: #fff; }
+      .container { padding: 0; max-width: none; }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header class="header">
     <div class="header-inner">
-      <div class="logo">
-        <div class="logo-icon">日</div>
-        <div>
-          <div class="logo-text">실습일지 AI</div>
-          <div class="logo-sub">사회복지현장실습 일지 생성기</div>
-        </div>
-      </div>
-      <div class="api-status" id="apiStatus" onclick="toggleApiSection()">
-        <span class="status-dot"></span>
-        <span id="apiStatusText">API 키 미설정</span>
+      <div class="logo">실습일지 AI<span>사회복지현장실습</span></div>
+      <div class="api-badge" id="apiBadge" onclick="toggleApi()">
+        <span class="api-dot"></span>
+        <span id="apiBadgeText">API 미연결</span>
       </div>
     </div>
   </header>
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loader"></div>
-    <div class="loading-text" id="loadingText">AI가 실습일지를 작성하고 있습니다...</div>
+
+  <div class="overlay" id="overlay">
+    <div class="spin"></div>
+    <div class="overlay-text" id="overlayText">일지를 작성하고 있습니다</div>
   </div>
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
-  <!-- Main -->
+
   <main class="container">
-    <!-- API Key -->
-    <div class="api-section" id="apiSection">
-      <label>🔑 Google Gemini API Key</label>
-      <div class="api-input-wrap">
-        <input type="password" id="apiKeyInput" placeholder="AIza... 형식의 API 키를 입력하세요">
-        <button class="btn btn-primary btn-small" onclick="saveApiKey()">저장</button>
+    <!-- API -->
+    <div class="api-section" id="apiBox">
+      <label>Gemini API Key</label>
+      <div class="api-row">
+        <input type="password" id="apiInput" placeholder="AIza...">
+        <button type="button" class="btn btn-dark" onclick="saveKey()">저장</button>
       </div>
-      <p class="hint">API 키는 브라우저 로컬 스토리지에만 저장되며, 외부로 전송되지 않습니다. <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent)">키 발급받기 →</a></p>
+      <p class="hint" style="margin-top:8px">키는 브라우저에만 저장됩니다. <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--blue)">발급받기</a></p>
     </div>
-    <!-- Step 1: Basic Info -->
-    <div class="card">
-      <div class="card-title">
-        <span class="num">1</span>
-        기본 정보
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>실습 일자</label>
-          <input type="date" id="practiceDate">
-        </div>
-        <div class="form-group">
-          <label>실습 일차</label>
-          <input type="number" id="practiceDay" placeholder="예: 5" min="1">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>실습 기관명</label>
-          <input type="text" id="orgName" placeholder="예: ○○종합사회복지관">
-        </div>
-        <div class="form-group">
-          <label>실습생 이름</label>
-          <input type="text" id="studentName" placeholder="이름 입력">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>실습 지도자</label>
-          <input type="text" id="supervisorName" placeholder="지도자 이름">
-        </div>
-        <div class="form-group">
-          <label>실습 시간</label>
-          <div class="form-row" style="margin-bottom:0">
-            <input type="text" id="startTime" placeholder="09:00">
-            <input type="text" id="endTime" placeholder="18:00">
+
+    <!-- 1. 기본정보 -->
+    <div class="section">
+      <div class="section-head">01 — 기본 정보</div>
+      <div class="panel">
+        <div class="row row-3">
+          <div class="field"><label>실습일</label><input type="date" id="fDate"></div>
+          <div class="field"><label>요일</label>
+            <select id="fDay">
+              <option value="월">월요일</option><option value="화">화요일</option>
+              <option value="수">수요일</option><option value="목">목요일</option>
+              <option value="금">금요일</option><option value="토">토요일</option>
+              <option value="일">일요일</option>
+            </select>
           </div>
+          <div class="field"><label>회차</label><input type="number" id="fRound" placeholder="1" min="1" max="20"></div>
+        </div>
+        <div class="row row-3">
+          <div class="field"><label>출근</label><input type="text" id="fStart" placeholder="09:00"></div>
+          <div class="field"><label>퇴근</label><input type="text" id="fEnd" placeholder="18:00"></div>
+          <div class="field"><label>총 시간</label><input type="text" id="fTotal" placeholder="8"></div>
+        </div>
+        <div class="row row-2">
+          <div class="field"><label>실습기관</label><input type="text" id="fOrg" placeholder="○○종합사회복지관"></div>
+          <div class="field"><label>실습생</label><input type="text" id="fName" placeholder="이름"></div>
         </div>
       </div>
     </div>
-    <!-- Step 2: Activities -->
-    <div class="card">
-      <div class="card-title">
-        <span class="num">2</span>
-        오늘의 실습 활동
-      </div>
-      <p class="hint" style="margin-bottom:16px; margin-top:-12px;">시간대별로 오늘 한 활동을 간단히 입력해주세요. AI가 상세한 내용으로 확장합니다.</p>
-      <div id="activitiesList">
-        <div class="activity-item" data-index="0">
-          <button class="activity-remove" onclick="removeActivity(this)" title="삭제">×</button>
-          <div class="form-row">
-            <div class="form-group">
-              <label>시간대</label>
-              <input type="text" class="act-time" placeholder="예: 09:00~10:00">
+
+    <!-- 2. 목표 + 활동 -->
+    <div class="section">
+      <div class="section-head">02 — 목표 및 활동</div>
+      <div class="panel">
+        <div class="field">
+          <label>오늘의 목표</label>
+          <textarea id="fGoal" rows="2" placeholder="예: 이용자와의 라포 형성을 연습하고, 프로그램 운영과정을 관찰한다."></textarea>
+          <p class="hint">간단히 적으면 AI가 다듬어줍니다</p>
+        </div>
+        <div style="height:16px"></div>
+        <label>시간별 진행사항</label>
+        <div id="actList">
+          <div class="act-item">
+            <button type="button" class="act-del" onclick="delAct(this)">×</button>
+            <div class="row row-2">
+              <div class="field"><label>시간</label><input type="text" class="a-time" placeholder="09:00~10:00"></div>
+              <div class="field"><label>구분</label>
+                <select class="a-cat">
+                  <option>출석/조회</option><option>오리엔테이션</option>
+                  <option>교육/강의</option><option>프로그램 참여</option>
+                  <option>프로그램 보조</option><option>상담 관찰</option>
+                  <option>사례 관리</option><option>행정 업무</option>
+                  <option>지역사회 탐방</option><option>슈퍼비전</option>
+                  <option>기관 분석</option><option>기타</option>
+                </select>
+              </div>
             </div>
-            <div class="form-group">
-              <label>활동 구분</label>
-              <select class="act-category">
-                <option value="출석/조회">출석/조회</option>
-                <option value="교육/강의">교육/강의</option>
-                <option value="프로그램 참여">프로그램 참여</option>
-                <option value="프로그램 보조">프로그램 보조</option>
-                <option value="상담 관찰">상담 관찰</option>
-                <option value="사례 관리">사례 관리</option>
-                <option value="행정 업무">행정 업무</option>
-                <option value="지역사회 탐방">지역사회 탐방</option>
-                <option value="슈퍼비전">슈퍼비전</option>
-                <option value="기타">기타</option>
-              </select>
+            <div class="field">
+              <label>내용</label>
+              <textarea class="a-content" rows="2" placeholder="간단히 적어주세요"></textarea>
             </div>
           </div>
-          <div class="form-group">
-            <label>활동 내용 (간단히)</label>
-            <textarea class="act-content" rows="2" placeholder="예: 어르신 대상 건강체조 프로그램 보조, 10명 참여, 체조 시범 도움"></textarea>
-          </div>
         </div>
+        <button type="button" class="add-btn" onclick="addAct()">+ 시간대 추가</button>
       </div>
-      <button class="add-activity" onclick="addActivity()">+ 활동 시간대 추가</button>
     </div>
-    <!-- Step 3: Extras -->
-    <div class="card">
-      <div class="card-title">
-        <span class="num">3</span>
-        추가 정보 (선택)
-      </div>
-      <div class="form-group">
-        <label>오늘의 소감 / 느낀점 키워드</label>
-        <textarea id="reflectionKeywords" rows="2" placeholder="예: 어르신들과 소통의 중요성을 느낌, 체력적으로 힘들었지만 보람 있었음"></textarea>
-      </div>
-      <div class="form-group">
-        <label>특이사항 / 메모</label>
-        <textarea id="extraNotes" rows="2" placeholder="예: 다음 주 프로그램 기획 회의 참석 예정"></textarea>
-      </div>
-      <div class="form-group">
-        <label>일러스트 이미지 생성</label>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-          <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-weight:400;">
-            <input type="checkbox" id="generateImage" style="width:auto;accent-color:var(--accent)">
-            오늘의 활동을 일러스트 이미지로 생성
+
+    <!-- 3. 추가 -->
+    <div class="section">
+      <div class="section-head">03 — 의견 (선택)</div>
+      <div class="panel">
+        <div class="field">
+          <label>실습생 의견 키워드</label>
+          <textarea id="fReflect" rows="2" placeholder="느낀점이나 키워드를 적으면 AI가 성찰적 의견으로 확장합니다"></textarea>
+        </div>
+        <div class="field">
+          <label>실습지도자 의견</label>
+          <textarea id="fSuper" rows="2" placeholder="비워두면 AI가 예시를 생성합니다"></textarea>
+        </div>
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400">
+            <input type="checkbox" id="fImg" style="width:auto;accent-color:var(--text-1)">
+            일러스트 이미지 생성
           </label>
+          <p class="hint">Gemini로 활동 관련 일러스트를 생성합니다</p>
         </div>
-        <p class="hint">체크하면 Gemini로 활동 관련 일러스트를 생성합니다 (추가 시간 소요)</p>
       </div>
     </div>
-    <!-- Generate Button -->
-    <button class="btn btn-primary btn-generate" id="generateBtn" onclick="generateJournal()">
-      ✍️ AI 실습일지 생성하기
+
+    <button type="button" class="btn btn-dark btn-full" id="genBtn" onclick="generate()">
+      실습일지 생성
     </button>
+
     <!-- Result -->
-    <div class="result-area" id="resultArea">
+    <div class="section result" id="resultArea">
       <div style="height:32px"></div>
-      <div class="card-title" style="margin-bottom:16px;">
-        <span class="num">✓</span>
-        생성된 실습일지
-      </div>
-      <div class="journal-output" id="journalOutput">
-        <!-- Filled by JS -->
-      </div>
+      <div class="section-head">생성 완료</div>
+      <div class="journal" id="journalOut"></div>
       <div class="result-actions">
-        <button class="btn btn-secondary btn-small" onclick="copyToClipboard()">📋 텍스트 복사</button>
-        <button class="btn btn-secondary btn-small" onclick="window.print()">🖨️ 인쇄 / PDF</button>
-        <button class="btn btn-primary btn-small" onclick="downloadHTML()">💾 HTML 저장</button>
+        <button type="button" class="btn btn-ghost" onclick="copyText()">복사</button>
+        <button type="button" class="btn btn-ghost" onclick="window.print()">인쇄</button>
+        <button type="button" class="btn btn-dark" onclick="dlHTML()">HTML 저장</button>
       </div>
     </div>
   </main>
+
   <script>
-    // ============================================
-    // State
-    // ============================================
     let apiKey = localStorage.getItem('gemini_api_key') || '';
-    let generatedJournalText = '';
-    // Init
+    let plainText = '';
+
     document.addEventListener('DOMContentLoaded', () => {
-      // Set today's date
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('practiceDate').value = today;
-      // Check saved API key
-      if (apiKey) {
-        updateApiStatus(true);
-        document.getElementById('apiSection').classList.add('hidden');
-      }
-      // Load saved form data
-      loadSavedData();
+      const t = new Date();
+      document.getElementById('fDate').value = t.toISOString().split('T')[0];
+      document.getElementById('fDay').value = ['일','월','화','수','목','금','토'][t.getDay()];
+      if (apiKey) { setApiBadge(true); document.getElementById('apiBox').classList.add('hidden'); }
+      loadSaved();
+      document.getElementById('fDate').addEventListener('change', e => {
+        const d = new Date(e.target.value);
+        if (!isNaN(d)) document.getElementById('fDay').value = ['일','월','화','수','목','금','토'][d.getDay()];
+      });
     });
-    // ============================================
-    // API Key Management
-    // ============================================
-    function toggleApiSection() {
-      const section = document.getElementById('apiSection');
-      section.classList.toggle('hidden');
-      if (!section.classList.contains('hidden')) {
-        document.getElementById('apiKeyInput').focus();
-      }
+
+    function toggleApi() {
+      const b = document.getElementById('apiBox');
+      b.classList.toggle('hidden');
+      if (!b.classList.contains('hidden')) document.getElementById('apiInput').focus();
     }
-    function saveApiKey() {
-      const key = document.getElementById('apiKeyInput').value.trim();
-      if (!key) {
-        showToast('API 키를 입력해주세요.', 'error');
-        return;
-      }
-      apiKey = key;
-      localStorage.setItem('gemini_api_key', key);
-      updateApiStatus(true);
-      document.getElementById('apiSection').classList.add('hidden');
-      showToast('API 키가 저장되었습니다.', 'success');
+    function saveKey() {
+      const k = document.getElementById('apiInput').value.trim();
+      if (!k) { toast('API 키를 입력해주세요', false); return; }
+      apiKey = k; localStorage.setItem('gemini_api_key', k);
+      setApiBadge(true); document.getElementById('apiBox').classList.add('hidden');
+      toast('API 키 저장됨', true);
     }
-    function updateApiStatus(connected) {
-      const el = document.getElementById('apiStatus');
-      const text = document.getElementById('apiStatusText');
-      if (connected) {
-        el.classList.add('connected');
-        text.textContent = 'API 연결됨';
-      } else {
-        el.classList.remove('connected');
-        text.textContent = 'API 키 미설정';
-      }
+    function setApiBadge(on) {
+      const el = document.getElementById('apiBadge');
+      const tx = document.getElementById('apiBadgeText');
+      if (on) { el.classList.add('on'); tx.textContent = '연결됨'; }
+      else { el.classList.remove('on'); tx.textContent = 'API 미연결'; }
     }
-    // ============================================
-    // Activity Management
-    // ============================================
-    function addActivity() {
-      const list = document.getElementById('activitiesList');
-      const idx = list.children.length;
-      const div = document.createElement('div');
-      div.className = 'activity-item';
-      div.dataset.index = idx;
-      div.innerHTML = `
-        <button class="activity-remove" onclick="removeActivity(this)" title="삭제">×</button>
-        <div class="form-row">
-          <div class="form-group">
-            <label>시간대</label>
-            <input type="text" class="act-time" placeholder="예: 10:00~12:00">
-          </div>
-          <div class="form-group">
-            <label>활동 구분</label>
-            <select class="act-category">
-              <option value="출석/조회">출석/조회</option>
-              <option value="교육/강의">교육/강의</option>
-              <option value="프로그램 참여">프로그램 참여</option>
-              <option value="프로그램 보조">프로그램 보조</option>
-              <option value="상담 관찰">상담 관찰</option>
-              <option value="사례 관리">사례 관리</option>
-              <option value="행정 업무">행정 업무</option>
-              <option value="지역사회 탐방">지역사회 탐방</option>
-              <option value="슈퍼비전">슈퍼비전</option>
-              <option value="기타">기타</option>
+
+    function addAct() {
+      const list = document.getElementById('actList');
+      const d = document.createElement('div');
+      d.className = 'act-item';
+      d.innerHTML = `
+        <button type="button" class="act-del" onclick="delAct(this)">×</button>
+        <div class="row row-2">
+          <div class="field"><label>시간</label><input type="text" class="a-time" placeholder="10:00~12:00"></div>
+          <div class="field"><label>구분</label>
+            <select class="a-cat">
+              <option>출석/조회</option><option>오리엔테이션</option>
+              <option>교육/강의</option><option>프로그램 참여</option>
+              <option>프로그램 보조</option><option>상담 관찰</option>
+              <option>사례 관리</option><option>행정 업무</option>
+              <option>지역사회 탐방</option><option>슈퍼비전</option>
+              <option>기관 분석</option><option>기타</option>
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label>활동 내용 (간단히)</label>
-          <textarea class="act-content" rows="2" placeholder="예: 아동 방과후 프로그램 운영 보조"></textarea>
-        </div>
-      `;
-      list.appendChild(div);
-      div.querySelector('.act-time').focus();
+        <div class="field"><label>내용</label><textarea class="a-content" rows="2" placeholder="간단히 적어주세요"></textarea></div>`;
+      list.appendChild(d);
+      d.querySelector('.a-time').focus();
     }
-    function removeActivity(btn) {
-      const item = btn.closest('.activity-item');
-      const list = document.getElementById('activitiesList');
-      if (list.children.length <= 1) {
-        showToast('최소 1개의 활동이 필요합니다.', 'error');
-        return;
-      }
-      item.remove();
+    function delAct(btn) {
+      const list = document.getElementById('actList');
+      if (list.children.length <= 1) { toast('최소 1개 필요', false); return; }
+      btn.closest('.act-item').remove();
     }
-    // ============================================
-    // Gather form data
-    // ============================================
-    function getFormData() {
-      const activities = [];
-      document.querySelectorAll('.activity-item').forEach(item => {
-        activities.push({
-          time: item.querySelector('.act-time').value.trim(),
-          category: item.querySelector('.act-category').value,
-          content: item.querySelector('.act-content').value.trim()
+
+    function getData() {
+      const acts = [];
+      document.querySelectorAll('.act-item').forEach(el => {
+        acts.push({
+          time: el.querySelector('.a-time').value.trim(),
+          cat: el.querySelector('.a-cat').value,
+          content: el.querySelector('.a-content').value.trim()
         });
       });
       return {
-        date: document.getElementById('practiceDate').value,
-        day: document.getElementById('practiceDay').value,
-        org: document.getElementById('orgName').value.trim(),
-        student: document.getElementById('studentName').value.trim(),
-        supervisor: document.getElementById('supervisorName').value.trim(),
-        startTime: document.getElementById('startTime').value.trim(),
-        endTime: document.getElementById('endTime').value.trim(),
-        activities,
-        reflection: document.getElementById('reflectionKeywords').value.trim(),
-        notes: document.getElementById('extraNotes').value.trim(),
-        generateImage: document.getElementById('generateImage').checked
+        date: document.getElementById('fDate').value,
+        day: document.getElementById('fDay').value,
+        round: document.getElementById('fRound').value,
+        org: document.getElementById('fOrg').value.trim(),
+        name: document.getElementById('fName').value.trim(),
+        start: document.getElementById('fStart').value.trim(),
+        end: document.getElementById('fEnd').value.trim(),
+        total: document.getElementById('fTotal').value.trim(),
+        goal: document.getElementById('fGoal').value.trim(),
+        acts,
+        reflect: document.getElementById('fReflect').value.trim(),
+        superOp: document.getElementById('fSuper').value.trim(),
+        img: document.getElementById('fImg').checked
       };
     }
-    function validateForm(data) {
-      if (!apiKey) {
-        showToast('먼저 Gemini API 키를 설정해주세요.', 'error');
-        toggleApiSection();
-        return false;
-      }
-      if (!data.date) { showToast('실습 일자를 입력해주세요.', 'error'); return false; }
-      if (!data.org) { showToast('실습 기관명을 입력해주세요.', 'error'); return false; }
-      if (data.activities.every(a => !a.content)) {
-        showToast('최소 1개의 활동 내용을 입력해주세요.', 'error');
-        return false;
-      }
-      return true;
+
+    function saveSome(d) {
+      localStorage.setItem('j_saved', JSON.stringify({
+        org: d.org, name: d.name, start: d.start, end: d.end, total: d.total
+      }));
     }
-    // ============================================
-    // Save / Load
-    // ============================================
-    function saveFormData(data) {
-      const toSave = { org: data.org, student: data.student, supervisor: data.supervisor, startTime: data.startTime, endTime: data.endTime };
-      localStorage.setItem('journal_form_data', JSON.stringify(toSave));
-    }
-    function loadSavedData() {
+    function loadSaved() {
       try {
-        const saved = JSON.parse(localStorage.getItem('journal_form_data'));
-        if (saved) {
-          if (saved.org) document.getElementById('orgName').value = saved.org;
-          if (saved.student) document.getElementById('studentName').value = saved.student;
-          if (saved.supervisor) document.getElementById('supervisorName').value = saved.supervisor;
-          if (saved.startTime) document.getElementById('startTime').value = saved.startTime;
-          if (saved.endTime) document.getElementById('endTime').value = saved.endTime;
+        const s = JSON.parse(localStorage.getItem('j_saved'));
+        if (s) {
+          if (s.org) document.getElementById('fOrg').value = s.org;
+          if (s.name) document.getElementById('fName').value = s.name;
+          if (s.start) document.getElementById('fStart').value = s.start;
+          if (s.end) document.getElementById('fEnd').value = s.end;
+          if (s.total) document.getElementById('fTotal').value = s.total;
         }
-      } catch (e) {}
+      } catch(e) {}
     }
-    // ============================================
-    // Gemini API Call
-    // ============================================
+
     async function callGemini(prompt) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096
-          }
-        })
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 4096 } })
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `API 오류 (${res.status})`);
-      }
-      const data = await res.json();
-      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message || `오류 ${r.status}`); }
+      const d = await r.json();
+      return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
-    async function callGeminiImage(prompt) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseModalities: ["TEXT", "IMAGE"]
-          }
-        })
+    async function callGeminiImg(prompt) {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseModalities: ["TEXT","IMAGE"] } })
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `이미지 생성 오류 (${res.status})`);
-      }
-      const data = await res.json();
-      const parts = data.candidates?.[0]?.content?.parts || [];
-      for (const part of parts) {
-        if (part.inlineData) {
-          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-        }
-      }
+      if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message || `이미지 오류 ${r.status}`); }
+      const d = await r.json();
+      for (const p of (d.candidates?.[0]?.content?.parts || [])) { if (p.inlineData) return `data:${p.inlineData.mimeType};base64,${p.inlineData.data}`; }
       return null;
     }
-    // ============================================
-    // Generate Journal
-    // ============================================
-    async function generateJournal() {
-      const data = getFormData();
-      if (!validateForm(data)) return;
-      saveFormData(data);
-      showLoading(true);
-      const activitiesText = data.activities
-        .filter(a => a.content)
-        .map(a => `- ${a.time || '시간미정'} | ${a.category} | ${a.content}`)
-        .join('\n');
-      const prompt = `당신은 사회복지학과 현장실습 일지 작성 전문가입니다. 아래 정보를 바탕으로 사회복지현장실습 일지를 작성해주세요.
-## 기본 정보
-- 실습 일자: ${data.date}
-- 실습 일차: ${data.day || '미정'}일차
-- 실습 기관: ${data.org}
-- 실습생: ${data.student || '미기재'}
-- 지도자: ${data.supervisor || '미기재'}
-- 실습 시간: ${data.startTime || '09:00'} ~ ${data.endTime || '18:00'}
-## 오늘의 활동 요약
-${activitiesText}
-${data.reflection ? `## 실습생 소감 키워드\n${data.reflection}` : ''}
-${data.notes ? `## 특이사항\n${data.notes}` : ''}
-## 작성 지침
-1. 각 활동을 시간대별로 정리하여 상세하게 서술해주세요.
-2. 사회복지 실습 맥락에 맞는 전문적인 용어를 사용해주세요.
-3. 활동별로 실습생이 실제로 수행한 역할과 관찰 내용을 구체적으로 기술해주세요.
-4. 소감/느낀점은 사회복지 가치와 연결하여 성찰적으로 작성해주세요.
-5. 지나치게 길지 않고, 실제 실습일지에 적합한 분량으로 작성해주세요.
-## 출력 형식 (반드시 이 JSON 형식으로만 응답)
+
+    async function generate() {
+      const d = getData();
+      if (!apiKey) { toast('API 키를 설정해주세요', false); toggleApi(); return; }
+      if (!d.date) { toast('실습일을 입력해주세요', false); return; }
+      if (d.acts.every(a => !a.content)) { toast('활동을 1개 이상 입력해주세요', false); return; }
+      saveSome(d);
+      showOverlay(true);
+
+      const actText = d.acts.filter(a=>a.content).map(a=>`- ${a.time||'미정'} | ${a.cat} | ${a.content}`).join('\n');
+      const prompt = `당신은 사회복지학과 현장실습 일지 작성 전문가입니다.
+배움사이버평생교육원 양식에 맞춰 실습일지를 작성해주세요.
+
+## 정보
+- 실습일: ${d.date} (${d.day})
+- ${d.round||'-'}회차
+- 기관: ${d.org||'미기재'}
+- 출근 ${d.start||'09:00'} / 퇴근 ${d.end||'18:00'} / 총 ${d.total||'8'}시간
+
+## 목표
+${d.goal || '(적절한 목표 생성)'}
+
+## 활동
+${actText}
+${d.reflect ? `\n## 실습생 의견 키워드\n${d.reflect}` : ''}
+${d.superOp ? `\n## 실습지도자 의견\n${d.superOp}` : ''}
+
+## 지침
+1. 목표: 1~2문장, 당일 학습목표
+2. 진행사항: 시간대별 2~4문장, 실습생 역할+관찰+배운점
+3. 실습생 의견: 3~5문장, 사회복지 가치 연결 성찰
+4. 실습지도자 의견: 2~3문장, 태도+개선점
+5. 식사/휴식시간은 실습시간 미인정으로 기록
+6. 클라이언트 실명 사용 금지, 전문적 문체
+
+## JSON 출력
 \`\`\`json
 {
-  "timeActivities": [
-    {
-      "time": "시간대",
-      "category": "활동구분",
-      "detail": "상세 활동 내용 (2-4문장)"
-    }
-  ],
-  "reflection": "실습 소감 및 느낀점 (3-5문장의 성찰적 내용)",
-  "supervisorComment": "지도자 코멘트 예시 (1-2문장)"
+  "goal": "목표 1-2문장",
+  "timeActivities": [{"time":"09:00~10:00","content":"상세 2-4문장"}],
+  "studentOpinion": "3-5문장",
+  "supervisorOpinion": "2-3문장"
 }
 \`\`\`
-JSON만 출력하세요. 다른 텍스트는 포함하지 마세요.`;
+JSON만 출력.`;
+
       try {
-        const rawResult = await callGemini(prompt);
-        // Parse JSON from response
-        let journalData;
+        const raw = await callGemini(prompt);
+        let jd;
         try {
-          const jsonMatch = rawResult.match(/\`\`\`json\\s*([\\s\\S]*?)\\s*\`\`\`/) || rawResult.match(/\\{[\\s\\S]*\\}/);
-          const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : rawResult;
-          journalData = JSON.parse(jsonStr);
-        } catch (parseErr) {
-          throw new Error('AI 응답을 파싱할 수 없습니다. 다시 시도해주세요.');
-        }
-        // Render journal
-        renderJournal(data, journalData);
-        // Generate image if requested
-        if (data.generateImage) {
-          generateJournalImage(data, journalData);
-        }
-        showLoading(false);
-        showToast('실습일지가 생성되었습니다!', 'success');
-        // Scroll to result
-        document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } catch (err) {
-        showLoading(false);
-        console.error(err);
-        if (err.message.includes('API_KEY') || err.message.includes('401') || err.message.includes('403')) {
-          showToast('API 키가 유효하지 않습니다. 키를 확인해주세요.', 'error');
-          updateApiStatus(false);
-        } else {
-          showToast(`오류: ${err.message}`, 'error');
-        }
+          const m = raw.match(/```json\s*([\s\S]*?)\s*```/) || raw.match(/\{[\s\S]*\}/);
+          jd = JSON.parse(m ? (m[1]||m[0]) : raw);
+        } catch(e) { throw new Error('응답 파싱 실패. 다시 시도해주세요.'); }
+        render(d, jd);
+        if (d.img) genImg(d, jd);
+        showOverlay(false);
+        toast('실습일지가 생성되었습니다', true);
+        document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'start' });
+      } catch(e) {
+        showOverlay(false);
+        if (e.message.includes('API_KEY')||e.message.includes('401')||e.message.includes('403')) {
+          toast('API 키가 유효하지 않습니다', false); setApiBadge(false);
+        } else { toast(e.message, false); }
       }
     }
-    // ============================================
-    // Render Journal
-    // ============================================
-    function renderJournal(formData, journalData) {
-      const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        const days = ['일', '월', '화', '수', '목', '금', '토'];
-        return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
-      };
-      const tableRows = journalData.timeActivities.map(a => `
-        <tr>
-          <td>${a.time}</td>
-          <td>${a.category}</td>
-          <td>${a.detail}</td>
-        </tr>
-      `).join('');
-      const html = `
-        <div class="journal-header">
-          <h2>사회복지현장실습일지</h2>
-          <p style="font-size:13px;color:var(--text-muted);">${formData.org}</p>
-        </div>
-        <div class="journal-meta">
-          <span><strong>실습일자</strong>${formatDate(formData.date)}</span>
-          <span><strong>실습일차</strong>${formData.day || '-'}일차</span>
-          <span><strong>실습생</strong>${formData.student || '-'}</span>
-          <span><strong>지도자</strong>${formData.supervisor || '-'}</span>
-          <span><strong>실습시간</strong>${formData.startTime || '09:00'} ~ ${formData.endTime || '18:00'}</span>
-        </div>
-        <h4 style="font-family:'Noto Serif KR',serif;font-size:15px;margin-bottom:12px;">📋 시간대별 실습 내용</h4>
-        <table class="journal-table">
-          <thead>
-            <tr>
-              <th>시간</th>
-              <th>구분</th>
-              <th>실습 내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
+
+    function render(f, j) {
+      const md = f.date ? new Date(f.date) : new Date();
+      const dateStr = `${md.getMonth()+1}월 ${md.getDate()}일`;
+      const rows = j.timeActivities.map(a => `<tr><td class="j-p-time">${a.time}</td><td class="j-p-content">${a.content}</td></tr>`).join('');
+      document.getElementById('journalOut').innerHTML = `
+        <div class="j-head"><h2>실 습 일 지${f.round ? ` (${f.round}회)` : ''}</h2></div>
+        <table class="j-table">
+          <tr>
+            <th>실습일</th>
+            <td colspan="2">${dateStr} ${f.day}요일</td>
+            <th>결재</th>
+            <td class="j-stamp">실습생<br><div class="j-stamp-circle">㊞</div></td>
+            <td class="j-stamp">실습지도자<br><div class="j-stamp-circle">㊞</div></td>
+          </tr>
+          <tr>
+            <th>출근</th><td>${f.start||'09:00'}</td>
+            <th>퇴근</th><td>${f.end||'18:00'}</td>
+            <th colspan="2">총 ${f.total||'8'}시간</th>
+          </tr>
+          <tr><th>목 표</th><td colspan="5" style="line-height:1.8">${j.goal}</td></tr>
+          <tr><td colspan="6" class="j-section-note">시간 | 진행사항 — 식사·휴식시간은 실습시간으로 인정되지 않음</td></tr>
+          <tr><td colspan="6" class="j-progress"><table class="j-p-table">${rows}</table></td></tr>
+          <tr><th>실습생<br>의견</th><td colspan="5" class="j-opinion">${j.studentOpinion}</td></tr>
+          <tr><th>실습<br>지도자<br>의견</th><td colspan="5" class="j-opinion">${j.supervisorOpinion}</td></tr>
         </table>
-        <div class="journal-reflection">
-          <h4>💭 실습 소감 및 느낀점</h4>
-          <p>${journalData.reflection}</p>
-        </div>
-        ${journalData.supervisorComment ? `
-        <div class="journal-reflection" style="margin-top:16px; padding:14px; background:var(--bg-input); border-radius:var(--radius-sm);">
-          <h4 style="font-size:13px; color:var(--text-muted);">📝 지도자 코멘트 (예시)</h4>
-          <p style="font-size:13px;">${journalData.supervisorComment}</p>
-        </div>` : ''}
-        <div id="imageContainer"></div>
-      `;
-      document.getElementById('journalOutput').innerHTML = html;
-      document.getElementById('resultArea').classList.add('visible');
-      // Store text for copy
-      generatedJournalText = buildPlainText(formData, journalData);
+        <div id="imgBox"></div>`;
+      document.getElementById('resultArea').classList.add('on');
+      plainText = `실습일지 (${f.round||'-'}회)\n${'='.repeat(40)}\n실습일: ${f.date} (${f.day})\n출근: ${f.start||'09:00'} | 퇴근: ${f.end||'18:00'} | 총 ${f.total||'8'}시간\n\n[목표]\n${j.goal}\n\n[진행사항]\n${j.timeActivities.map(a=>`${a.time}\n  ${a.content}`).join('\n\n')}\n\n[실습생 의견]\n${j.studentOpinion}\n\n[실습지도자 의견]\n${j.supervisorOpinion}`;
     }
-    function buildPlainText(formData, journalData) {
-      let text = `사회복지현장실습일지\n`;
-      text += `${'='.repeat(40)}\n`;
-      text += `실습기관: ${formData.org}\n`;
-      text += `실습일자: ${formData.date} | ${formData.day || '-'}일차\n`;
-      text += `실습생: ${formData.student || '-'} | 지도자: ${formData.supervisor || '-'}\n`;
-      text += `실습시간: ${formData.startTime || '09:00'} ~ ${formData.endTime || '18:00'}\n\n`;
-      text += `[시간대별 실습 내용]\n`;
-      journalData.timeActivities.forEach(a => {
-        text += `${a.time} (${a.category})\n  ${a.detail}\n\n`;
-      });
-      text += `[실습 소감 및 느낀점]\n${journalData.reflection}\n`;
-      if (journalData.supervisorComment) {
-        text += `\n[지도자 코멘트 예시]\n${journalData.supervisorComment}\n`;
-      }
-      return text;
-    }
-    // ============================================
-    // Image Generation
-    // ============================================
-    async function generateJournalImage(formData, journalData) {
-      const container = document.getElementById('imageContainer');
-      container.innerHTML = `
-        <div class="journal-image-section">
-          <h4>🎨 오늘의 활동 일러스트</h4>
-          <div class="image-generating">
-            <div class="mini-loader"></div>
-            이미지를 생성하고 있습니다... (최대 30초 소요)
-          </div>
-        </div>
-      `;
-      const activitiesSummary = journalData.timeActivities.map(a => a.detail).join(', ');
-      const imagePrompt = `A warm, friendly watercolor illustration depicting a social work student's day at "${formData.org}". The scene shows: ${activitiesSummary}. Style: soft pastel colors, gentle and heartwarming illustration, Korean social welfare center setting, professional yet warm atmosphere. No text in the image.`;
+
+    async function genImg(f, j) {
+      const box = document.getElementById('imgBox');
+      box.innerHTML = `<div class="j-img-section"><h4>활동 일러스트</h4><div class="img-loading"><div class="mini-spin"></div>생성 중...</div></div>`;
+      const summary = j.timeActivities.map(a=>a.content).join(', ');
       try {
-        const imageData = await callGeminiImage(imagePrompt);
-        if (imageData) {
-          container.innerHTML = `
-            <div class="journal-image-section">
-              <h4>🎨 오늘의 활동 일러스트</h4>
-              <img src="${imageData}" alt="오늘의 실습 활동 일러스트">
-            </div>
-          `;
-        } else {
-          container.innerHTML = `
-            <div class="journal-image-section">
-              <h4>🎨 오늘의 활동 일러스트</h4>
-              <p class="hint">이미지 생성에 실패했습니다. 이미지 생성 모델이 지원되지 않을 수 있습니다.</p>
-            </div>
-          `;
-        }
-      } catch (err) {
-        console.error('Image generation error:', err);
-        container.innerHTML = `
-          <div class="journal-image-section">
-            <h4>🎨 오늘의 활동 일러스트</h4>
-            <p class="hint">이미지 생성 중 오류: ${err.message}</p>
-          </div>
-        `;
+        const img = await callGeminiImg(`A warm watercolor illustration of a social work student's day at "${f.org}": ${summary}. Soft pastel, Korean welfare center, no text.`);
+        box.innerHTML = img
+          ? `<div class="j-img-section"><h4>활동 일러스트</h4><img src="${img}" alt="활동 일러스트"></div>`
+          : `<div class="j-img-section"><h4>활동 일러스트</h4><p class="hint">이미지 생성 실패</p></div>`;
+      } catch(e) {
+        box.innerHTML = `<div class="j-img-section"><h4>활동 일러스트</h4><p class="hint">오류: ${e.message}</p></div>`;
       }
     }
-    // ============================================
-    // Actions
-    // ============================================
-    function copyToClipboard() {
-      if (!generatedJournalText) return;
-      navigator.clipboard.writeText(generatedJournalText).then(() => {
-        showToast('클립보드에 복사되었습니다.', 'success');
-      }).catch(() => {
-        // Fallback
-        const ta = document.createElement('textarea');
-        ta.value = generatedJournalText;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast('클립보드에 복사되었습니다.', 'success');
+
+    function copyText() {
+      if (!plainText) return;
+      navigator.clipboard.writeText(plainText).then(()=>toast('복사됨',true)).catch(()=>{
+        const t=document.createElement('textarea'); t.value=plainText;
+        document.body.appendChild(t); t.select(); document.execCommand('copy');
+        document.body.removeChild(t); toast('복사됨',true);
       });
     }
-    function downloadHTML() {
-      const output = document.getElementById('journalOutput').innerHTML;
-      const htmlContent = `<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>실습일지</title>
-<style>
-  body { font-family: 'Noto Sans KR', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; color: #1A1A1A; line-height: 1.7; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  th, td { border: 1px solid #ddd; padding: 10px 12px; text-align: left; vertical-align: top; }
-  th { background: #f5f5f5; font-weight: 600; }
-  h2 { text-align: center; }
-  img { max-width: 100%; border-radius: 8px; }
-</style>
-</head>
-<body>${output}</body>
-</html>`;
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
+    function dlHTML() {
+      const h = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>실습일지</title>
+<style>body{font-family:'Noto Sans KR',sans-serif;max-width:800px;margin:40px auto;padding:20px;color:#1D1D1F;line-height:1.7}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid #D2D2D7;padding:10px 12px;text-align:left;vertical-align:middle}
+th{background:#F5F5F7;font-weight:600;text-align:center;font-size:12px}h2{text-align:center;letter-spacing:8px}
+img{max-width:100%;border-radius:10px}.j-stamp-circle{display:inline-block;width:36px;height:36px;border:1.5px solid #D2D2D7;border-radius:50%;line-height:33px;font-size:10px;color:#C7C7CC;margin-top:3px;text-align:center}
+.j-stamp{text-align:center;font-size:11px;color:#AEAEB2}.j-p-table{width:100%;border-collapse:collapse}.j-p-table td{border:none;border-bottom:1px solid #F2F2F7;padding:8px 14px}
+.j-p-table tr:last-child td{border-bottom:none}.j-p-time{width:88px;text-align:center;font-weight:500;font-size:12px;border-right:1px solid #F2F2F7!important}</style></head>
+<body>${document.getElementById('journalOut').innerHTML}</body></html>`;
+      const b = new Blob([h],{type:'text/html;charset=utf-8'});
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `실습일지_${document.getElementById('practiceDate').value || 'unknown'}.html`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('HTML 파일이 다운로드됩니다.', 'success');
+      a.href = URL.createObjectURL(b);
+      a.download = `실습일지_${document.getElementById('fRound').value||''}회_${document.getElementById('fDate').value||''}.html`;
+      a.click(); URL.revokeObjectURL(a.href);
+      toast('다운로드 시작',true);
     }
-    // ============================================
-    // UI Helpers
-    // ============================================
-    function showLoading(show) {
-      const el = document.getElementById('loadingOverlay');
-      const btn = document.getElementById('generateBtn');
-      if (show) {
-        el.classList.add('visible');
-        btn.disabled = true;
-        const texts = [
-          'AI가 실습일지를 작성하고 있습니다...',
-          '활동 내용을 분석하고 있습니다...',
-          '전문적인 표현으로 다듬고 있습니다...',
-          '거의 완성되었습니다...'
-        ];
-        let i = 0;
-        window._loadingInterval = setInterval(() => {
-          i = (i + 1) % texts.length;
-          document.getElementById('loadingText').textContent = texts[i];
-        }, 3000);
-      } else {
-        el.classList.remove('visible');
-        btn.disabled = false;
-        clearInterval(window._loadingInterval);
-      }
+
+    function showOverlay(on) {
+      document.getElementById('overlay').classList.toggle('on',on);
+      document.getElementById('genBtn').disabled = on;
+      if (on) {
+        const msgs = ['일지를 작성하고 있습니다','활동 내용을 분석 중','표현을 다듬고 있습니다','거의 완성되었습니다'];
+        let i=0;
+        window._ov = setInterval(()=>{ i=(i+1)%msgs.length; document.getElementById('overlayText').textContent=msgs[i]; },2500);
+      } else { clearInterval(window._ov); }
     }
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = `toast ${type} show`;
-      setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    function toast(msg, ok) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = `toast ${ok?'ok':'err'} show`;
+      setTimeout(()=>t.classList.remove('show'), 2500);
     }
   </script>
 </body>
